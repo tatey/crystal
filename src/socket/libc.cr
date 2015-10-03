@@ -86,13 +86,14 @@ lib LibC
     SOL_SOCKET    = 0xffff
     SO_REUSEADDR  = 0x0004
     SO_KEEPALIVE  = 0x0008
+    SO_BROADCAST  = 0x0020
     SO_LINGER     = 0x0080
     SO_SNDBUF     = 0x1001
     SO_RCVBUF     = 0x1002
-    TCP_NODELAY   =   0x01
-    TCP_KEEPIDLE  =   0x10 # aka TCP_KEEPALIVE
-    TCP_KEEPINTVL =  0x101
-    TCP_KEEPCNT   =  0x102
+    TCP_NODELAY   = 0x01
+    TCP_KEEPIDLE  = 0x10 # aka TCP_KEEPALIVE
+    TCP_KEEPINTVL = 0x101
+    TCP_KEEPCNT   = 0x102
   else
     struct SockAddrIn
       family : UInt16
@@ -128,6 +129,7 @@ lib LibC
 
     SOL_SOCKET    =  1
     SO_REUSEADDR  =  2
+    SO_BROADCAST  =  6
     SO_SNDBUF     =  7
     SO_RCVBUF     =  8
     SO_KEEPALIVE  =  9
