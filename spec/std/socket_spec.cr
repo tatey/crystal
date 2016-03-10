@@ -116,7 +116,7 @@ describe "TCPServer" do
   it "fails when port is in use" do
     expect_raises Errno, /(already|Address) in use/ do
       TCPServer.open("::", 0) do |server|
-        TCPServer.open("::", server.addr.ip_port) { }
+        TCPServer.open("::", server.addr.port) { }
       end
     end
   end
@@ -146,7 +146,7 @@ describe "TCPSocket" do
       (server.linger = 42).should eq 42
       server.linger.should eq 42
 
-      TCPSocket.open("::", server.addr.ip_port) do |client|
+      TCPSocket.open("::", server.addr.port) do |client|
         # The commented lines are actually dependent on the system configuration,
         # so for now we keep it commented. Once we can force the family
         # we can uncomment them.
@@ -186,7 +186,7 @@ describe "TCPSocket" do
       # test sync flag propagation after accept
       server.sync = !server.sync?
 
-      TCPSocket.open("localhost", server.addr.ip_port) do |client|
+      TCPSocket.open("localhost", server.addr.port) do |client|
         sock = server.accept
         sock.sync?.should eq(server.sync?)
       end
@@ -196,7 +196,7 @@ describe "TCPSocket" do
   it "fails when connection is refused" do
     port = 0
     TCPServer.open("localhost", port) do |server|
-      port = server.addr.ip_port
+      port = server.addr.port
     end
 
     expect_raises(Errno, "Error connecting to 'localhost:#{port}': Connection refused") do

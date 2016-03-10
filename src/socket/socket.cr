@@ -175,7 +175,7 @@ class Socket < IO::FileDescriptor
     getsockopt_bool LibC::SO_BROADCAST
   end
 
-  def broadcast= val : Bool
+  def broadcast=(val : Bool)
     setsockopt_bool LibC::SO_BROADCAST, val
   end
 
@@ -250,7 +250,7 @@ class Socket < IO::FileDescriptor
     optval
   end
 
-  private def nonblocking_connect host, port, ai, timeout = nil
+  private def nonblocking_connect(host, port, ai, timeout = nil)
     loop do
       ret = LibC.connect(@fd, ai.addr, ai.addrlen)
       return nil if ret == 0 # success

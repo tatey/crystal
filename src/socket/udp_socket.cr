@@ -83,7 +83,7 @@ class UDPSocket < IPSocket
 
     raise Errno.new("Error writing datagram")
   ensure
-    add_write_event unless writers.empty?
+    add_write_event_if_writers
   end
 
   def sendto(slice : Slice(UInt8), addr : IPAddr)
@@ -95,7 +95,7 @@ class UDPSocket < IPSocket
 
     raise Errno.new("Error writing datagram")
   ensure
-    add_write_event unless writers.empty?
+    add_write_event_if_writers
   end
 
   def recvfrom(size : Int)
@@ -108,7 +108,7 @@ class UDPSocket < IPSocket
 
   def recvfrom(slice : Slice(UInt8))
     loop do
-      sockaddr :: LibC::SockAddrIn6
+      sockaddr = uninitialized LibC::SockAddrIn6
       addrlen = LibC::SocklenT.new(sizeof(LibC::SockAddrIn6))
 
       bytes_read = LibC.recvfrom(fd, (slice.to_unsafe as Void*), slice.size, 0, pointerof(sockaddr) as LibC::SockAddr*, pointerof(addrlen))
@@ -119,13 +119,25 @@ class UDPSocket < IPSocket
         }
       end
 
-      if LibC.errno == Errno::EAGAIN
+      if Errno.value == Errno::EAGAIN
         wait_readable
       else
         raise Errno.new("Error receiving datagram")
       end
     end
   ensure
-    add_read_event unless readers.empty?
+    add_read_event_if_readers
+  end
+
+  private def add_write_event_if_writers
+    if (writers = @writers) && !writers.empty?
+      add_write_event
+    end
+  end
+
+  private def add_read_event_if_readers
+    if (readers = @readers) && !readers.empty?
+      add_read_event
+    end
   end
 end
